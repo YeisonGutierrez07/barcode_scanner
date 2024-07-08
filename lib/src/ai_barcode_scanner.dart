@@ -198,6 +198,7 @@ class AiBarcodeScanner extends StatefulWidget {
   /// Camera switch and torch toggle buttons are added by default
   /// You can add more actions to the app bar using this parameter
   final List<Widget>? actions;
+
   const AiBarcodeScanner({
     super.key,
     this.fit = BoxFit.cover,
@@ -273,54 +274,47 @@ class _AiBarcodeScannerState extends State<AiBarcodeScanner> {
       DeviceOrientation.portraitDown,
     ]);
     return Scaffold(
-      appBar: widget.appBarBuilder?.call(context, controller) ??
-          AppBar(
-            backgroundColor: Colors.transparent,
-            foregroundColor: Colors.white,
-            elevation: 0,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.cameraswitch_rounded),
-                onPressed: controller.switchCamera,
-              ),
-              IconButton(
-                icon: controller.torchEnabled
-                    ? const Icon(Icons.flashlight_off_rounded)
-                    : const Icon(Icons.flashlight_on_rounded),
-                onPressed: controller.toggleTorch,
-              ),
-              if (!widget.hideGalleryIcon)
-                GalleryButton.icon(
-                  onImagePick: widget.onImagePick,
-                  onDetect: widget.onDetect,
-                  validator: widget.validator,
-                  controller: controller,
-                  isSuccess: _isSuccess,
-                ),
-              ...?widget.actions,
-            ],
-          ),
       extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
-      bottomSheet: widget.bottomSheetBuilder?.call(context, controller) ??
-          DraggableSheet(
-            title: widget.sheetTitle,
-            hideDragHandler: widget.hideSheetDragHandler,
-            hideTitle: widget.hideSheetTitle,
-            child: widget.sheetChild,
-          ),
       body: Stack(
         children: [
-          MobileScanner(
-            onDetect: onDetect,
-            controller: controller,
-            fit: widget.fit,
-            errorBuilder:
-                widget.errorBuilder ?? (_, error, ___) => const ErrorBuilder(),
-            placeholderBuilder: widget.placeholderBuilder,
-            scanWindow: widget.scanWindow,
-            key: widget.key,
-            overlayBuilder: widget.overlayBuilder,
-            scanWindowUpdateThreshold: widget.scanWindowUpdateThreshold,
+          Row(
+            children: [
+              MobileScanner(
+                onDetect: onDetect,
+                controller: controller,
+                fit: widget.fit,
+                errorBuilder: widget.errorBuilder ??
+                    (_, error, ___) => const ErrorBuilder(),
+                placeholderBuilder: widget.placeholderBuilder,
+                scanWindow: widget.scanWindow,
+                key: widget.key,
+                overlayBuilder: widget.overlayBuilder,
+                scanWindowUpdateThreshold: widget.scanWindowUpdateThreshold,
+              ),
+              Column(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.cameraswitch_rounded),
+                    onPressed: controller.switchCamera,
+                  ),
+                  IconButton(
+                    icon: controller.torchEnabled
+                        ? const Icon(Icons.flashlight_off_rounded)
+                        : const Icon(Icons.flashlight_on_rounded),
+                    onPressed: controller.toggleTorch,
+                  ),
+                  if (!widget.hideGalleryIcon)
+                    GalleryButton.icon(
+                      onImagePick: widget.onImagePick,
+                      onDetect: widget.onDetect,
+                      validator: widget.validator,
+                      controller: controller,
+                      isSuccess: _isSuccess,
+                    ),
+                  ...?widget.actions,
+                ],
+              )
+            ],
           ),
           ValueListenableBuilder<bool?>(
             valueListenable: _isSuccess,
